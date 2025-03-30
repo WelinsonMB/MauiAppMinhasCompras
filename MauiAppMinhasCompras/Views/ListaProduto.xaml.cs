@@ -6,86 +6,139 @@ namespace MauiAppMinhasCompras.Views;
 
 public partial class ListaProduto : ContentPage
 {
-	ObservableCollection<Produto> lista = new ObservableCollection<Produto>();
-	public ListaProduto()
-	{
-		InitializeComponent();
+    ObservableCollection<Produto> lista = new ObservableCollection<Produto>();
+    public ListaProduto()
+    {
+        InitializeComponent();
 
-		lst_produtos.ItemsSource = lista; 
-	}
+        lst_produtos.ItemsSource = lista;
+    }
 
     protected async override void OnAppearing()
     {
-		List<Produto> tmp = await App.Db.GetAll();
+        try
+        {
+            List<Produto> tmp = await App.Db.GetAll();
 
-		tmp.ForEach(i => lista.Add(i));
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("ops", ex.Message, "OK");
+        }
     }
 
     private void ToolbarItem_Clicked(object sender, EventArgs e)
     {
-		try
-		{
-			Navigation.PushAsync(new Views.NovoProduto());
+        try
+        {
+            Navigation.PushAsync(new Views.NovoProduto());
 
-		}catch (Exception ex)
-		{
-			DisplayAlert("ops", ex.Message, "OK");
-		}
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("ops", ex.Message, "OK");
+        }
     }
 
     private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
     {
-		string q = e.NewTextValue;
+        try
+        {
+            string q = e.NewTextValue;
 
-		lista.Clear(); 
+            lista.Clear();
 
-        List<Produto> tmp = await App.Db.Search(q);
+            List<Produto> tmp = await App.Db.Search(q);
 
-        tmp.ForEach(i => lista.Add(i));
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("ops", ex.Message, "OK");
+        }
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-		double soma = lista.Sum(i => i.Total);
-
-		string msg = $"O total é{soma:C}";
-
-		DisplayAlert("Total de Produtos ", msg, "OK"); 
-    }
-
-    private async void MenuItem_Clicked(object sender, EventArgs e)
-    {
-
-        var menuItem = (MenuItem)sender;
-
-        var produto = (Produto)menuItem.BindingContext;
-
-        bool confirmacao = await DisplayAlert("Confirmar",
-        $"Você tem certeza que deseja remover o produto '{produto.Descricao}'?",
-        "Sim",
-        "Não");
-
-        if (confirmacao)
+        try
         {
-            lista.Remove(produto);
+            double soma = lista.Sum(i => i.Total);
 
-            await App.Db.Delete(produto.Id);
+            string msg = $"O total é{soma:C}";
 
-            await DisplayAlert("Sucesso", "Produto removido com sucesso.", "OK");
+            DisplayAlert("Total de Produtos ", msg, "OK");
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("ops", ex.Message, "OK");
         }
 
     }
 
- private async void SliderPreco_ValueChanged(object sender, ValueChangedEventArgs e)
+    private async void MenuItem_Clicked(object sender, EventArgs e)
     {
-        double precoMax = e.NewValue; // Obtém o valor máximo do preço selecionado pelo usuário
+        try
+        {
+            var menuItem = (MenuItem)sender;
 
-        lista.Clear(); // Limpa a lista antes de exibir os resultados filtrados
+            var produto = (Produto)menuItem.BindingContext;
 
-        List<Produto> tmp = await App.Db.GetAll(); // Busca todos os produtos no banco de dados
+            bool confirmacao = await DisplayAlert("Confirmar",
+            $"Você tem certeza que deseja remover o produto '{produto.Descricao}'?",
+            "Sim",
+            "Não");
 
-        var filtrados = tmp.Where(p => p.Preco <= precoMax).ToList(); // Filtra os produtos pelo preço máximo
+            if (confirmacao)
+            {
+                lista.Remove(produto);
 
-        filtrados.ForEach(i => lista.Add(i)); // Atualiza a lista com os produtos filtrados
+                await App.Db.Delete(produto.Id);
+
+                await DisplayAlert("Sucesso", "Produto removido com sucesso.", "OK");
+            }
+        }
+        catch
+        (Exception ex)
+        { await DisplayAlert("ops", ex.Message, "OK"); }
+    }
+
+    private async void SliderPreco_ValueChanged(object sender, ValueChangedEventArgs e)
+    {
+        try
+        {
+            double precoMax = e.NewValue; // Obtém o valor máximo do preço selecionado pelo usuário
+
+            lista.Clear(); // Limpa a lista antes de exibir os resultados filtrados
+
+            List<Produto> tmp = await App.Db.GetAll(); // Busca todos os produtos no banco de dados
+
+            var filtrados = tmp.Where(p => p.Preco <= precoMax).ToList(); // Filtra os produtos pelo preço máximo
+
+            filtrados.ForEach(i => lista.Add(i)); // Atualiza a lista com os produtos filtrados
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("ops", ex.Message, "OK");
+        }
+    }
+
+    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+        try
+        {
+            Produto p = e.SelectedItem as Produto;
+
+            Navigation.PushAsync(new Views.EditarProduto
+            {
+                BindingContext = p,
+
+            });
+
+
+        }catch (Exception ex)
+        {
+            DisplayAlert("ops", ex.Message, "OK");
+        }
     }
 }

@@ -8,7 +8,7 @@
         <ToolbarItem Text="Somar" Clicked="ToolbarItem_Clicked_1" />
         <ToolbarItem Text="Adicionar" Clicked="ToolbarItem_Clicked" />
     </ContentPage.ToolbarItems>
-    
+
     <VerticalStackLayout>
 
         <SearchBar x:Name="txt_search" 
@@ -17,7 +17,7 @@
 
         <Slider x:Name="slider_preco"
         Minimum="0"
-        Maximum="1000"
+        Maximum="500"
         ValueChanged="SliderPreco_ValueChanged"
         HorizontalOptions="FillAndExpand" />
 
@@ -30,9 +30,9 @@
            HorizontalOptions="Center"/>
 
 
-        <ListView x:Name="lst_produtos">
+        <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
             <ListView.Header>
-                <Grid ColumnDefinitions="*, *, *, *, *, *">
+                <Grid ColumnDefinitions="*, *, *, *, *">
                     <Label Grid.Column="0" Text="ID"/>
                     <Label Grid.Column="1" Text="Descricao"/>
                     <Label Grid.Column="2" Text="Preco"/>
@@ -46,7 +46,7 @@
                         <ViewCell.ContextActions>
                             <MenuItem Text="Remover" Clicked="MenuItem_Clicked"/>
                         </ViewCell.ContextActions>
-                        <Grid ColumnDefinitions="*, *, *, *, *, *">
+                        <Grid ColumnDefinitions="*, *, *, *, *">
                             <Label Grid.Column="0" Text="{Binding Id}"/>
                             <Label Grid.Column="1" Text="{Binding Descricao}"/>
                             <Label Grid.Column="2" Text="{Binding Preco}"/>
