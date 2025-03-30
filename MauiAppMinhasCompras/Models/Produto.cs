@@ -17,7 +17,7 @@ namespace MauiAppMinhasCompras.Models
             {
                 if (value == null)
                 {
-                    throw new Exception("Por favor, preencha a descrução");
+                    throw new Exception("Por favor, preencha a descrição");
                 }
 
                 _descricao = value;
