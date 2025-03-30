@@ -1,5 +1,6 @@
 using MauiAppMinhasCompras.Models;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace MauiAppMinhasCompras.Views;
 
@@ -52,8 +53,39 @@ public partial class ListaProduto : ContentPage
 		DisplayAlert("Total de Produtos ", msg, "OK"); 
     }
 
-    private void MenuItem_Clicked(object sender, EventArgs e)
+    private async void MenuItem_Clicked(object sender, EventArgs e)
     {
 
+        var menuItem = (MenuItem)sender;
+
+        var produto = (Produto)menuItem.BindingContext;
+
+        bool confirmacao = await DisplayAlert("Confirmar",
+        $"Você tem certeza que deseja remover o produto '{produto.Descricao}'?",
+        "Sim",
+        "Não");
+
+        if (confirmacao)
+        {
+            lista.Remove(produto);
+
+            await App.Db.Delete(produto.Id);
+
+            await DisplayAlert("Sucesso", "Produto removido com sucesso.", "OK");
+        }
+
+    }
+
+ private async void SliderPreco_ValueChanged(object sender, ValueChangedEventArgs e)
+    {
+        double precoMax = e.NewValue; // Obtém o valor máximo do preço selecionado pelo usuário
+
+        lista.Clear(); // Limpa a lista antes de exibir os resultados filtrados
+
+        List<Produto> tmp = await App.Db.GetAll(); // Busca todos os produtos no banco de dados
+
+        var filtrados = tmp.Where(p => p.Preco <= precoMax).ToList(); // Filtra os produtos pelo preço máximo
+
+        filtrados.ForEach(i => lista.Add(i)); // Atualiza a lista com os produtos filtrados
     }
 }
